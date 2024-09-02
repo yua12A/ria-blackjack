@@ -7,16 +7,16 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #FFFACD; /* レモン色 */
+            background-color: #F0F8FF; /* ニトリベースのカラーに近いアリスブルー */
             text-align: center;
         }
         #gameArea {
             margin: 20px auto;
             padding: 20px;
-            border: 2px solid #FFD700; /* ゴールドのボーダー */
+            border: 2px solid #4682B4; /* スチールブルー */
             border-radius: 10px;
-            background-color: #FFF; /* 白背景 */
-            width: 320px;
+            background-color: #FFFFFF; /* 白背景 */
+            width: 340px;
         }
         button {
             padding: 10px 20px;
@@ -24,6 +24,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
         }
         #hitButton {
             background-color: #32CD32; /* ライムグリーン */
@@ -43,6 +45,22 @@
         .hand {
             margin-top: 10px;
         }
+        #resultTable {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        #resultTable th, #resultTable td {
+            border: 1px solid #4682B4; /* スチールブルー */
+            padding: 8px;
+            text-align: center;
+        }
+        #resultTable th {
+            background-color: #87CEFA; /* スカイブルー */
+        }
+        #resultTable td {
+            background-color: #F5F5F5; /* ホワイトスモーク */
+        }
     </style>
 </head>
 <body>
@@ -59,10 +77,21 @@
             <p>勝利数: <span id="winCount">0</span></p>
             <p>敗北数: <span id="loseCount">0</span></p>
         </div>
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>ゲーム結果</th>
+                    <th>プレイヤーの得点</th>
+                    <th>ディーラーの得点</th>
+                </tr>
+            </thead>
+            <tbody id="resultBody">
+                <!-- ゲーム結果がここに追加されます -->
+            </tbody>
+        </table>
     </div>
 
     <script>
-        // ゲームの基本設定
         let winCount = 0;
         let loseCount = 0;
         let deck = [];
@@ -138,6 +167,7 @@
                 endGame('lose');
             } else {
                 displayHand(playerHand, 'playerHand');
+                updateGameStatus();
             }
         }
 
@@ -159,17 +189,32 @@
 
         function endGame(result) {
             gameInProgress = false;
+            const playerScore = calculateScore(playerHand);
+            const dealerScore = calculateScore(dealerHand);
+            let gameResultText = '';
             if (result === 'win') {
                 winCount++;
-                document.getElementById('gameStatus').textContent = '勝ちました！';
+                gameResultText = '勝ちました！';
             } else if (result === 'lose') {
                 loseCount++;
-                document.getElementById('gameStatus').textContent = '負けました...';
+                gameResultText = '負けました...';
             } else {
-                document.getElementById('gameStatus').textContent = '引き分けです！';
+                gameResultText = '引き分けです！';
             }
+            document.getElementById('gameStatus').textContent = gameResultText;
             document.getElementById('winCount').textContent = winCount;
             document.getElementById('loseCount').textContent = loseCount;
+
+            // 結果を表に追加
+            const resultTableBody = document.getElementById('resultBody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${gameResultText}</td>
+                <td>${playerScore}</td>
+                <td>${dealerScore}</td>
+            `;
+            resultTableBody.appendChild(row);
+
             document.getElementById('hitButton').disabled = true;
             document.getElementById('standButton').disabled = true;
             document.getElementById('resetButton').style.display = 'block';
@@ -182,6 +227,7 @@
             document.getElementById('winCount').textContent = winCount;
             document.getElementById('loseCount').textContent = loseCount;
             document.getElementById('gameStatus').textContent = 'ゲームスタート';
+            document.getElementById('resultBody').innerHTML = ''; // 結果表の内容をクリア
             document.getElementById('hitButton').disabled = false;
             document.getElementById('standButton').disabled = false;
             startGame();
