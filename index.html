@@ -7,13 +7,13 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #F0F8FF; /* ニトリベースのカラーに近いアリスブルー */
+            background-color: #00B48D; /* ニトリベースのカラーに近いアリスブルー */
             text-align: center;
         }
         #gameArea {
             margin: 20px auto;
             padding: 20px;
-            border: 2px solid #4682B4; /* スチールブルー */
+            border: 2px solid #00B48D; /* スチールブルー */
             border-radius: 10px;
             background-color: #FFFFFF; /* 白背景 */
             width: 340px;
@@ -28,15 +28,15 @@
             font-weight: bold;
         }
         #hitButton {
-            background-color: #32CD32; /* ライムグリーン */
+            background-color: #00B48D; /* ライムグリーン */
             color: white;
         }
         #standButton {
-            background-color: #DC143C; /* クリムゾン */
+            background-color: #00B48D; /* クリムゾン */
             color: white;
         }
         #resetButton, #restartButton {
-            background-color: #1E90FF; /* ドジャーブルー */
+            background-color: #00B48D; /* ドジャーブルー */
             color: white;
         }
         #scoreboard {
@@ -51,15 +51,15 @@
             width: 100%;
         }
         #resultTable th, #resultTable td {
-            border: 1px solid #4682B4; /* スチールブルー */
+            border: 1px solid #00B48D; /* スチールブルー */
             padding: 8px;
             text-align: center;
         }
         #resultTable th {
-            background-color: #87CEFA; /* スカイブルー */
+            background-color: #00B48D; /* スカイブルー */
         }
         #resultTable td {
-            background-color: #F5F5F5; /* ホワイトスモーク */
+            background-color: #00B48D; /* ホワイトスモーク */
         }
     </style>
 </head>
@@ -69,10 +69,10 @@
         <div id="gameStatus">ゲームスタート</div>
         <div id="playerHand" class="hand">プレイヤーの手札: </div>
         <div id="dealerHand" class="hand">ディーラーの手札: </div>
-        <button id="hitButton">ヒット</button>
-        <button id="standButton">スタンド</button>
-        <button id="resetButton">リセット</button>
-        <button id="restartButton" style="display: none;">リスタート</button>
+        <button id="hitButton">hit</button>
+        <button id="standButton">stand</button>
+        <button id="resetButton">reset</button>
+        <button id="restartButton" style="display: none;">restart</button>
         <div id="scoreboard">
             <p>勝利数: <span id="winCount">0</span></p>
             <p>敗北数: <span id="loseCount">0</span></p>
