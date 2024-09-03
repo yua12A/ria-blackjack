@@ -1,121 +1,125 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ブラックジャックゲーム</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #00B48D; /* ニトリベースのカラーに近いアリスブルー */
-            text-align: center;
-        }
-        #gameArea {
-            margin: 20px auto;
-            padding: 20px;
-            border: 2px solid #00B48D; /* スチールブルー */
-            border-radius: 10px;
-            background-color: #FFFFFF; /* 白背景 */
-            width: 340px;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        #hitButton {
-            background-color: #00B48D; /* ライムグリーン */
-            color: white;
-        }
-        #standButton {
-            background-color: #00B48D; /* クリムゾン */
-            color: white;
-        }
-        #resetButton, #restartButton {
-            background-color: #00B48D; /* ドジャーブルー */
-            color: white;
-        }
-        #scoreboard {
-            margin-top: 20px;
-        }
-        .hand {
-            margin-top: 10px;
-        }
-        #resultTable {
-            margin-top: 20px;
-            border-collapse: collapse;
-            width: 100%;
-        }
-        #resultTable th, #resultTable td {
-            border: 1px solid #00B48D; /* スチールブルー */
-            padding: 8px;
-            text-align: center;
-        }
-        #resultTable th {
-            background-color: #00B48D; /* スカイブルー */
-        }
-        #resultTable td {
-            background-color: #FFFFFF; /* ホワイトスモーク */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ブラックジャックゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #00B48D; /* ニトリベースのカラーに近いアリスブルー */
+      text-align: center;
+    }
+    #gameArea {
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #00B48D; /* スチールブルー */
+      border-radius: 10px;
+      background-color: #FFFFFF; /* 白背景 */
+      width: 340px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px; /* Adjust margin for horizontal alignment */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    #hitButton {
+      background-color: #00B48D; /* ライムグリーン */
+      color: white;
+    }
+    #standButton {
+      background-color: #00B48D; /* クリムゾン */
+      color: white;
+    }
+    #resetButton, #restartButton {
+      background-color: #00B48D; /* ドジャーブルー */
+      color: white;
+    }
+    #scoreboard {
+      margin-top: 20px;
+    }
+    .hand {
+      margin-top: 10px;
+    }
+    #resultTable {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #resultTable th, #resultTable td {
+      border: 1px solid #00B48D; /* スチールブルー */
+      padding: 8px;
+      text-align: center;
+    }
+    #resultTable th {
+      background-color: #00B48D; /* スカイブルー */
+    }
+    #resultTable td {
+      background-color: #FFFFFF; /* ホワイトスモーク */
+    }
+  </style>
 </head>
 <body>
-    <div id="gameArea">
-        <h1>ブラックジャック</h1>
-        <div id="gameStatus">ゲームスタート</div>
-        <div id="playerHand" class="hand">プレイヤーの手札: </div>
-        <div id="dealerHand" class="hand">ディーラーの手札: </div>
-        <button id="hitButton">hit</button>
-        <button id="standButton">stand</button>
-        <button id="resetButton">reset</button>
-        <button id="restartButton" style="display: none;">restart</button>
-        <div id="scoreboard">
-            <p>勝利数: <span id="winCount">0</span></p>
-            <p>敗北数: <span id="loseCount">0</span></p>
-        </div>
-        <table id="resultTable">
-            <thead>
-                <tr>
-                    <th>ゲーム結果</th>
-                    <th>プレイヤーの得点</th>
-                    <th>ディーラーの得点</th>
-                </tr>
-            </thead>
-            <tbody id="resultBody">
-                <!-- ゲーム結果がここに追加されます -->
-            </tbody>
-        </table>
+  <div id="gameArea">
+    <h1>ブラックジャック</h1>
+    <div id="gameStatus">ゲームスタート</div>
+    <div id="playerHand" class="hand">プレイヤーの手札: </div>
+    <div id="dealerHand" class="hand">ディーラーの手札: </div>
+    <div style="display: flex; justify-content: center;">  <button id="hitButton">hit</button>
+      <button id="standButton">stand</button>
     </div>
+    <button id="resetButton">reset</button>
+    <button id="restartButton">restart</button>
+    <div id="scoreboard">
+      <p>勝利数: <span id="winCount">0</span></p>
+      <p>敗北数: <span id="loseCount">0</span></p>
+    </div>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th>ゲーム結果</th>
+          <th>プレイヤーの得点</th>
+          <th>ディーラーの得点</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody">
+        </tbody>
+    </table>
+  </div>
 
-    <script>
-        let winCount = 0;
-        let loseCount = 0;
-        let deck = [];
-        let playerHand = [];
-        let dealerHand = [];
-        const targetScore = 21;
-        let gameInProgress = false;
+  <script>
+    let winCount = 0;
+    let loseCount = 0;
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    const targetScore = 21;
+    let gameInProgress = false;
 
-        document.getElementById('hitButton').addEventListener('click', hit);
-        document.getElementById('standButton').addEventListener('click', stand);
-        document.getElementById('resetButton').addEventListener('click', resetGame);
-        document.getElementById('restartButton').addEventListener('click', restartGame);
+    document.getElementById('hitButton').addEventListener('click', hit);
+    document.getElementById('standButton').addEventListener('click', stand);
+    document.getElementById('resetButton').addEventListener('click', resetGame);
+    document.getElementById('restartButton').addEventListener('click', restartGame);
 
-        function createDeck() {
-            const suits = ['H', 'D', 'C', 'S'];
-            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-            deck = [];
-            for (let suit of suits) {
-                for (let value of values) {
-                    deck.push({ suit, value });
-                }
-            }
-            deck = deck.sort(() => Math.random() - 0.5); // シャッフル
-        }
+    // ... (前のコード)
+
+function createDeck() {
+  const suits = ['H', 'D', 'C', 'S'];
+  const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+  deck = [];
+  for (let suit of suits) {
+    for (let value of values) {
+      deck.push({ suit, value });
+    }
+  }
+  deck = deck.sort(() => Math.random() - 0.5); // シャッフル
+}
+
+// ... (残りのコード)
 
         function getCardValue(card) {
             if (card.value === 'A') return 11;
