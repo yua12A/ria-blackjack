@@ -7,43 +7,56 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #00B48D; /* ニトリベースのカラーに近いアリスブルー */
+      background-color: #f0f4f8; /* 背景を淡いブルーグレーに変更 */
+      color: #333; /* テキストカラーを濃いグレーに */
       text-align: center;
+      margin: 0;
+      padding: 0;
     }
     #gameArea {
-      margin: 20px auto;
-      padding: 20px;
-      border: 2px solid #00B48D; /* スチールブルー */
-      border-radius: 10px;
-      background-color: #FFFFFF; /* 白背景 */
-      width: 340px;
+      margin: 40px auto;
+      padding: 30px;
+      border: 2px solid #00B48D; /* ニトリグリーン */
+      border-radius: 12px;
+      background-color: #ffffff; /* 白背景 */
+      width: 350px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* コンテナに薄い影を追加 */
+    }
+    h1 {
+      color: #00B48D; /* 見出しのカラーをアクセントに */
     }
     button {
-      padding: 10px 20px;
-      margin: 5px; /* Adjust margin for horizontal alignment */
+      padding: 10px 25px;
+      margin: 10px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
       font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    button:hover {
+      transform: scale(1.05); /* ホバー時にボタンを少し拡大 */
     }
     #hitButton {
-      background-color: #00B48D; /* ライムグリーン */
+      background-color: #00B48D;
       color: white;
     }
     #standButton {
-      background-color: #00B48D; /* クリムゾン */
+      background-color: #00796b;
       color: white;
     }
     #resetButton, #restartButton {
-      background-color: #00B48D; /* ドジャーブルー */
+      background-color: #0288d1;
       color: white;
     }
     #scoreboard {
       margin-top: 20px;
     }
     .hand {
-      margin-top: 10px;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #555; /* 手札のテキストをグレーに */
     }
     #resultTable {
       margin-top: 20px;
@@ -51,15 +64,16 @@
       width: 100%;
     }
     #resultTable th, #resultTable td {
-      border: 1px solid #00B48D; /* スチールブルー */
-      padding: 8px;
+      border: 1px solid #00B48D;
+      padding: 10px;
       text-align: center;
     }
     #resultTable th {
-      background-color: #00B48D; /* スカイブルー */
+      background-color: #00B48D;
+      color: white;
     }
     #resultTable td {
-      background-color: #FFFFFF; /* ホワイトスモーク */
+      background-color: #f0f4f8; /* 淡いグレー背景 */
     }
   </style>
 </head>
@@ -69,11 +83,12 @@
     <div id="gameStatus">ゲームスタート</div>
     <div id="playerHand" class="hand">プレイヤーの手札: </div>
     <div id="dealerHand" class="hand">ディーラーの手札: </div>
-    <div style="display: flex; justify-content: center;">  <button id="hitButton">hit</button>
-      <button id="standButton">stand</button>
+    <div style="display: flex; justify-content: center;">
+      <button id="hitButton">Hit</button>
+      <button id="standButton">Stand</button>
     </div>
-    <button id="resetButton">reset</button>
-    <button id="restartButton">restart</button>
+    <button id="resetButton" style="display:none;">Reset</button>
+    <button id="restartButton" style="display:none;">Restart</button>
     <div id="scoreboard">
       <p>勝利数: <span id="winCount">0</span></p>
       <p>敗北数: <span id="loseCount">0</span></p>
@@ -87,11 +102,14 @@
         </tr>
       </thead>
       <tbody id="resultBody">
-        </tbody>
+        <!-- 結果がここに追加されます -->
+      </tbody>
     </table>
   </div>
 
+  <!-- ゲームのスクリプト -->
   <script>
+    // JavaScriptコードはそのまま
     let winCount = 0;
     let loseCount = 0;
     let deck = [];
@@ -105,153 +123,149 @@
     document.getElementById('resetButton').addEventListener('click', resetGame);
     document.getElementById('restartButton').addEventListener('click', restartGame);
 
-    // ... (前のコード)
-
-function createDeck() {
-  const suits = ['H', 'D', 'C', 'S'];
-  const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-  deck = [];
-  for (let suit of suits) {
-    for (let value of values) {
-      deck.push({ suit, value });
+    function createDeck() {
+      const suits = ['H', 'D', 'C', 'S'];
+      const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+      deck = [];
+      for (let suit of suits) {
+        for (let value of values) {
+          deck.push({ suit, value });
+        }
+      }
+      deck = deck.sort(() => Math.random() - 0.5); // シャッフル
     }
-  }
-  deck = deck.sort(() => Math.random() - 0.5); // シャッフル
-}
 
-// ... (残りのコード)
+    function getCardValue(card) {
+      if (card.value === 'A') return 11;
+      if (['K', 'Q', 'J'].includes(card.value)) return 10;
+      return parseInt(card.value);
+    }
 
-        function getCardValue(card) {
-            if (card.value === 'A') return 11;
-            if (['K', 'Q', 'J'].includes(card.value)) return 10;
-            return parseInt(card.value);
-        }
+    function calculateScore(hand) {
+      let score = 0;
+      let aceCount = 0;
+      for (let card of hand) {
+        score += getCardValue(card);
+        if (card.value === 'A') aceCount++;
+      }
+      while (score > targetScore && aceCount > 0) {
+        score -= 10;
+        aceCount--;
+      }
+      return score;
+    }
 
-        function calculateScore(hand) {
-            let score = 0;
-            let aceCount = 0;
-            for (let card of hand) {
-                score += getCardValue(card);
-                if (card.value === 'A') aceCount++;
-            }
-            while (score > targetScore && aceCount > 0) {
-                score -= 10;
-                aceCount--;
-            }
-            return score;
-        }
+    function displayHand(hand, elementId, isDealer = false) {
+      const handElement = document.getElementById(elementId);
+      let handText = hand.map(card => `${card.value}${card.suit}`).join(', ');
+      if (isDealer && !gameInProgress) {
+        handText = `${hand[0].value}${hand[0].suit}, [裏面のカード]`;
+      }
+      handElement.textContent = `${elementId === 'playerHand' ? 'プレイヤーの手札' : 'ディーラーの手札'}: ${handText} (合計: ${calculateScore(hand)})`;
+    }
 
-        function displayHand(hand, elementId, isDealer = false) {
-            const handElement = document.getElementById(elementId);
-            let handText = hand.map(card => `${card.value}${card.suit}`).join(', ');
-            if (isDealer && !gameInProgress) {
-                handText = `${hand[0].value}${hand[0].suit}, [裏面のカード]`;
-            }
-            handElement.textContent = `${elementId === 'playerHand' ? 'プレイヤーの手札' : 'ディーラーの手札'}: ${handText} (合計: ${calculateScore(hand)})`;
-        }
+    function startGame() {
+      createDeck();
+      playerHand = [deck.pop(), deck.pop()];
+      dealerHand = [deck.pop(), deck.pop()];
+      gameInProgress = true;
+      updateGameStatus();
+      displayHand(playerHand, 'playerHand');
+      displayHand(dealerHand, 'dealerHand', true);
+      document.getElementById('hitButton').disabled = false;
+      document.getElementById('standButton').disabled = false;
+      document.getElementById('resetButton').style.display = 'none';
+      document.getElementById('restartButton').style.display = 'none';
+    }
 
-        function startGame() {
-            createDeck();
-            playerHand = [deck.pop(), deck.pop()];
-            dealerHand = [deck.pop(), deck.pop()];
-            gameInProgress = true;
-            updateGameStatus();
-            displayHand(playerHand, 'playerHand');
-            displayHand(dealerHand, 'dealerHand', true);
-            document.getElementById('hitButton').disabled = false;
-            document.getElementById('standButton').disabled = false;
-            document.getElementById('resetButton').style.display = 'none';
-            document.getElementById('restartButton').style.display = 'none';
-        }
+    function hit() {
+      playerHand.push(deck.pop());
+      const playerScore = calculateScore(playerHand);
+      if (playerScore > targetScore) {
+        endGame('lose');
+      } else {
+        displayHand(playerHand, 'playerHand');
+        updateGameStatus();
+      }
+    }
 
-        function hit() {
-            playerHand.push(deck.pop());
-            const playerScore = calculateScore(playerHand);
-            if (playerScore > targetScore) {
-                endGame('lose');
-            } else {
-                displayHand(playerHand, 'playerHand');
-                updateGameStatus();
-            }
-        }
+    function stand() {
+      while (calculateScore(dealerHand) < 17) {
+        dealerHand.push(deck.pop());
+      }
+      const playerScore = calculateScore(playerHand);
+      const dealerScore = calculateScore(dealerHand);
+      displayHand(dealerHand, 'dealerHand');
+      if (dealerScore > targetScore || playerScore > dealerScore) {
+        endGame('win');
+      } else if (playerScore < dealerScore) {
+        endGame('lose');
+      } else {
+        endGame('draw');
+      }
+    }
 
-        function stand() {
-            while (calculateScore(dealerHand) < 17) {
-                dealerHand.push(deck.pop());
-            }
-            const playerScore = calculateScore(playerHand);
-            const dealerScore = calculateScore(dealerHand);
-            displayHand(dealerHand, 'dealerHand');
-            if (dealerScore > targetScore || playerScore > dealerScore) {
-                endGame('win');
-            } else if (playerScore < dealerScore) {
-                endGame('lose');
-            } else {
-                endGame('draw');
-            }
-        }
+    function endGame(result) {
+      gameInProgress = false;
+      const playerScore = calculateScore(playerHand);
+      const dealerScore = calculateScore(dealerHand);
+      let gameResultText = '';
+      if (result === 'win') {
+        winCount++;
+        gameResultText = '勝ちました！';
+      } else if (result === 'lose') {
+        loseCount++;
+        gameResultText = '負けました...';
+      } else {
+        gameResultText = '引き分けです！';
+      }
+      document.getElementById('gameStatus').textContent = gameResultText;
+      document.getElementById('winCount').textContent = winCount;
+      document.getElementById('loseCount').textContent = loseCount;
 
-        function endGame(result) {
-            gameInProgress = false;
-            const playerScore = calculateScore(playerHand);
-            const dealerScore = calculateScore(dealerHand);
-            let gameResultText = '';
-            if (result === 'win') {
-                winCount++;
-                gameResultText = '勝ちました！';
-            } else if (result === 'lose') {
-                loseCount++;
-                gameResultText = '負けました...';
-            } else {
-                gameResultText = '引き分けです！';
-            }
-            document.getElementById('gameStatus').textContent = gameResultText;
-            document.getElementById('winCount').textContent = winCount;
-            document.getElementById('loseCount').textContent = loseCount;
+      const resultTableBody = document.getElementById('resultBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${gameResultText}</td>
+        <td>${playerScore}</td>
+        <td>${dealerScore}</td>
+      `;
+      resultTableBody.appendChild(row);
 
-            // 結果を表に追加
-            const resultTableBody = document.getElementById('resultBody');
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${gameResultText}</td>
-                <td>${playerScore}</td>
-                <td>${dealerScore}</td>
-            `;
-            resultTableBody.appendChild(row);
+      document.getElementById('hitButton').disabled = true;
+      document.getElementById('standButton').disabled = true;
+      document.getElementById('resetButton').style.display = 'block';
+      document.getElementById('restartButton').style.display = 'block';
+    }
 
-            document.getElementById('hitButton').disabled = true;
-            document.getElementById('standButton').disabled = true;
-            document.getElementById('resetButton').style.display = 'block';
-            document.getElementById('restartButton').style.display = 'block';
-        }
+    function resetGame() {
+      winCount = 0;
+      loseCount = 0;
+      document.getElementById('winCount').textContent = winCount;
+      document.getElementById('loseCount').textContent = loseCount;
+      document.getElementById('gameStatus').textContent = 'ゲームスタート';
+      document.getElementById('resultBody').innerHTML = ''; // 結果表の内容をクリア
+      document.getElementById('hitButton').disabled = false;
+      document.getElementById('standButton').disabled = false;
+      startGame();
+    }
 
-        function resetGame() {
-            winCount = 0;
-            loseCount = 0;
-            document.getElementById('winCount').textContent = winCount;
-            document.getElementById('loseCount').textContent = loseCount;
-            document.getElementById('gameStatus').textContent = 'ゲームスタート';
-            document.getElementById('resultBody').innerHTML = ''; // 結果表の内容をクリア
-            document.getElementById('hitButton').disabled = false;
-            document.getElementById('standButton').disabled = false;
-            startGame();
-        }
+    function restartGame() {
+      document.getElementById('hitButton').disabled = false;
+      document.getElementById('standButton').disabled = false;
+      document.getElementById('resetButton').style.display = 'none';
+      document.getElementById('restartButton').style.display = 'none';
+      startGame();
+    }
 
-        function restartGame() {
-            document.getElementById('hitButton').disabled = false;
-            document.getElementById('standButton').disabled = false;
-            document.getElementById('resetButton').style.display = 'none';
-            document.getElementById('restartButton').style.display = 'none';
-            startGame();
-        }
+    function updateGameStatus() {
+      const playerScore = calculateScore(playerHand);
+      const dealerScore = calculateScore(dealerHand);
+      document.getElementById('gameStatus').textContent = `プレイヤーの得点: ${playerScore} / ディーラーの得点: ${dealerScore}`;
+    }
 
-        function updateGameStatus() {
-            const playerScore = calculateScore(playerHand);
-            const dealerScore = calculateScore(dealerHand);
-            document.getElementById('gameStatus').textContent = `プレイヤーの得点: ${playerScore} / ディーラーの得点: ${dealerScore}`;
-        }
-
-        startGame(); // ゲーム開始
-    </script>
+    startGame(); // ゲーム開始
+  </script>
 </body>
 </html>
+
